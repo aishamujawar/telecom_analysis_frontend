@@ -101,6 +101,36 @@ class _HomePageState extends State<HomePage> {
       "query":
           "SELECT InternetService, (SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) AS churn_rate FROM telcoCustomers WHERE InternetService = 'Fiber optic' GROUP BY InternetService;"
     },
+    {
+      "question": "What is the total revenue lost due to churn?",
+      "query":
+          "SELECT SUM(MonthlyCharges) AS total_revenue_lost FROM telcoCustomers WHERE Churn = 'Yes';"
+    },
+    {
+      "question": "What is the average monthly charge for customers with different internet services?",
+      "query":
+          "SELECT InternetService, AVG(MonthlyCharges) AS avg_monthly_charge FROM telcoCustomers GROUP BY InternetService;"
+    },
+    {
+      "question": "What is the total number of customers by contract type?",
+      "query":
+          "SELECT Contract, COUNT(*) AS total_customers FROM telcoCustomers GROUP BY Contract;"
+    },
+    {
+      "question": "What is the average tenure by internet service type?",
+      "query":
+          "SELECT InternetService, AVG(tenure) AS avg_tenure FROM telcoCustomers GROUP BY InternetService;"
+    },
+    {
+      "question": "What is the total number of customers with and without tech support?",
+      "query":
+          "SELECT TechSupport, COUNT(*) AS total_customers FROM telcoCustomers GROUP BY TechSupport;"
+    },
+    {
+      "question": "What is the average monthly charge for customers with different payment methods?",
+      "query":
+          "SELECT PaymentMethod, AVG(MonthlyCharges) AS avg_monthly_charge FROM telcoCustomers GROUP BY PaymentMethod;"
+    },
   ];
 
   Future<void> executeQuery(String query) async {
@@ -168,7 +198,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Understanding churn rate helps telecom companies identify issues, improve customer satisfaction, and develop strategies to retain customers.',
+                        'Understanding churn rate helps telecom companies identify issues, improve customer satisfaction, and develop strategies to retain customers. By analyzing churn patterns, businesses can proactively address customer concerns and enhance service quality.',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white),
                       ),
                     ],
@@ -241,7 +271,7 @@ class _HomePageState extends State<HomePage> {
     } else if (question.startsWith("What is the average tenure of churned vs non-churned customers")) {
       return _formatGroupedResults(results, "Churn", "avg_tenure", " months");
     } else if (question.startsWith("What is the average monthly charge for churned customers")) {
-      return _formatSingleValue(results, "Average Monthly Charge for Churned Customers", "\₹");
+      return _formatSingleValue(results, "Average Monthly Charge for Churned Customers", "\$");
     } else if (question.startsWith("What is the churn rate by contract type")) {
       return _formatGroupedResults(results, "Contract", "churn_rate", "%");
     } else if (question.startsWith("What is the churn rate for customers with and without partners")) {
@@ -270,6 +300,18 @@ class _HomePageState extends State<HomePage> {
       return _formatGroupedResults(results, "MultipleLines", "churn_rate", "%");
     } else if (question.startsWith("What is the churn rate for customers with fiber optic internet")) {
       return _formatGroupedResults(results, "InternetService", "churn_rate", "%");
+    } else if (question.startsWith("What is the total revenue lost due to churn")) {
+      return _formatSingleValue(results, "Total Revenue Lost Due to Churn", "\$");
+    } else if (question.startsWith("What is the average monthly charge for customers with different internet services")) {
+      return _formatGroupedResults(results, "InternetService", "avg_monthly_charge", "\$");
+    } else if (question.startsWith("What is the total number of customers by contract type")) {
+      return _formatGroupedResults(results, "Contract", "total_customers", "");
+    } else if (question.startsWith("What is the average tenure by internet service type")) {
+      return _formatGroupedResults(results, "InternetService", "avg_tenure", " months");
+    } else if (question.startsWith("What is the total number of customers with and without tech support")) {
+      return _formatGroupedResults(results, "TechSupport", "total_customers", "");
+    } else if (question.startsWith("What is the average monthly charge for customers with different payment methods")) {
+      return _formatGroupedResults(results, "PaymentMethod", "avg_monthly_charge", "\$");
     } else {
       return results.map<Widget>((row) => _buildAnswerRow(row)).toList();
     }
@@ -278,7 +320,8 @@ class _HomePageState extends State<HomePage> {
   // Format single value results with a suffix (e.g., %, $)
   List<Widget> _formatSingleValue(List<Map<String, dynamic>> results, String label, String suffix) {
     final value = results[0].values.first;
-    final formattedValue = value is double ? value.toStringAsFixed(2) : value.toString();
+    final formattedValue = value is double ? value.toStringAsFixed
+        (2) : value.toString();
     return [
       Text(
         '$label: $formattedValue$suffix',
