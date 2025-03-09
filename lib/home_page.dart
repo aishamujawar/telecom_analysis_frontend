@@ -58,7 +58,7 @@ class HomePage extends StatelessWidget {
                     }),
                     SizedBox(width: 20),
                     _buildOptionCard(context, "Customer Feedback", Icons.feedback, () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerFeedbackPage()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => FeedbackPage()));
                     }),
                   ],
                 ),
@@ -106,7 +106,7 @@ class AppDrawer extends StatelessWidget {
           ),
           _buildDrawerItem(context, "Home", Icons.home, HomePage()),
           _buildDrawerItem(context, "Services", Icons.business, TelecomServicesPage()),
-          _buildDrawerItem(context, "Feedback", Icons.feedback, CustomerFeedbackPage()),
+          _buildDrawerItem(context, "Feedback", Icons.feedback, FeedbackPage()),
         ],
       ),
     );

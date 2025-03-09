@@ -32,12 +32,12 @@ class _ChurnPredictionPageState extends State<ChurnPredictionPage> {
   final TextEditingController paperlessBillingController = TextEditingController();
 
   String result = "";
-  double confidence = 0.0; // Add confidence rate
+  double confidence = 0.0; // Confidence rate
 
   Future<void> _predictChurn() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final url = Uri.parse('http://127.0.0.1:5001/predict'); // Your local IP
+    final url = Uri.parse('http://127.0.0.1:5001/predict');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -45,22 +45,22 @@ class _ChurnPredictionPageState extends State<ChurnPredictionPage> {
         "tenure": int.parse(tenureController.text),
         "MonthlyCharges": double.parse(monthlyChargesController.text),
         "TotalCharges": double.parse(totalChargesController.text),
-        "Contract": int.parse(contractController.text), // 0=Month-to-Month, 1=One Year, 2=Two Years
-        "PaymentMethod": int.parse(paymentMethodController.text), // 0=Bank, 1=Credit Card, 2=Electronic
-        "SeniorCitizen": int.parse(seniorCitizenController.text), // 0=No, 1=Yes
-        "gender": int.parse(genderController.text), // 0=Female, 1=Male
-        "Partner": int.parse(partnerController.text), // 0=No, 1=Yes
-        "Dependents": int.parse(dependentsController.text), // 0=No, 1=Yes
-        "PhoneService": int.parse(phoneServiceController.text), // 0=No, 1=Yes
-        "MultipleLines": int.parse(multipleLinesController.text), // 0=No, 1=Yes
-        "InternetService": int.parse(internetServiceController.text), // 0=DSL, 1=Fiber optic
-        "OnlineSecurity": int.parse(onlineSecurityController.text), // 0=No, 1=Yes
-        "OnlineBackup": int.parse(onlineBackupController.text), // 0=No, 1=Yes
-        "DeviceProtection": int.parse(deviceProtectionController.text), // 0=No, 1=Yes
-        "TechSupport": int.parse(techSupportController.text), // 0=No, 1=Yes
-        "StreamingTV": int.parse(streamingTVController.text), // 0=No, 1=Yes
-        "StreamingMovies": int.parse(streamingMoviesController.text), // 0=No, 1=Yes
-        "PaperlessBilling": int.parse(paperlessBillingController.text) // 0=No, 1=Yes
+        "Contract": int.parse(contractController.text),
+        "PaymentMethod": int.parse(paymentMethodController.text),
+        "SeniorCitizen": int.parse(seniorCitizenController.text),
+        "gender": int.parse(genderController.text),
+        "Partner": int.parse(partnerController.text),
+        "Dependents": int.parse(dependentsController.text),
+        "PhoneService": int.parse(phoneServiceController.text),
+        "MultipleLines": int.parse(multipleLinesController.text),
+        "InternetService": int.parse(internetServiceController.text),
+        "OnlineSecurity": int.parse(onlineSecurityController.text),
+        "OnlineBackup": int.parse(onlineBackupController.text),
+        "DeviceProtection": int.parse(deviceProtectionController.text),
+        "TechSupport": int.parse(techSupportController.text),
+        "StreamingTV": int.parse(streamingTVController.text),
+        "StreamingMovies": int.parse(streamingMoviesController.text),
+        "PaperlessBilling": int.parse(paperlessBillingController.text)
       }),
     );
 
@@ -70,12 +70,12 @@ class _ChurnPredictionPageState extends State<ChurnPredictionPage> {
         result = jsonResponse['prediction'] == 1
             ? "⚠️ High Churn Risk!"
             : "✅ Customer is Safe!";
-        confidence = jsonResponse['probability']; // Set confidence rate
+        confidence = jsonResponse['probability'];
       });
     } else {
       setState(() {
         result = "Error: Could not get prediction.";
-        confidence = 0.0; // Reset confidence rate on error
+        confidence = 0.0;
       });
     }
   }
@@ -89,265 +89,81 @@ class _ChurnPredictionPageState extends State<ChurnPredictionPage> {
       ),
       backgroundColor: Colors.black,
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Row 1
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        children: [
-                          _buildTextField(tenureController, "Tenure (months)", "1-72", (value) {
-                            if (value == null || value.isEmpty) return "Enter Tenure";
-                            final tenure = int.tryParse(value);
-                            if (tenure == null || tenure < 1 || tenure > 72) {
-                              return "Enter a value between 1 and 72";
-                            }
-                            return null;
-                          }),
-                          const SizedBox(height: 10), // Consistent spacing
-                          _buildTextField(monthlyChargesController, "Monthly Charges", "10-120", (value) {
-                            if (value == null || value.isEmpty) return "Enter Monthly Charges";
-                            final monthlyCharges = double.tryParse(value);
-                            if (monthlyCharges == null || monthlyCharges < 10 || monthlyCharges > 120) {
-                              return "Enter a value between 10 and 120";
-                            }
-                            return null;
-                          }),
-                          const SizedBox(height: 10), // Consistent spacing
-                          _buildTextField(totalChargesController, "Total Charges", "0-8000", (value) {
-                            if (value == null || value.isEmpty) return "Enter Total Charges";
-                            final totalCharges = double.tryParse(value);
-                            if (totalCharges == null || totalCharges < 0 || totalCharges > 8000) {
-                              return "Enter a value between 0 and 8000";
-                            }
-                            return null;
-                          }),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 10), // Consistent spacing between columns
-                    Expanded(
-                      child: Column(
-                        children: [
-                          _buildTextField(contractController, "Contract Type", "0=Month-to-Month, 1=One Year, 2=Two Years", (value) {
-                            if (value == null || value.isEmpty) return "Enter Contract Type";
-                            final contract = int.tryParse(value);
-                            if (contract == null || contract < 0 || contract > 2) {
-                              return "Enter 0, 1, or 2";
-                            }
-                            return null;
-                          }),
-                          const SizedBox(height: 10), // Consistent spacing
-                          _buildTextField(paymentMethodController, "Payment Method", "0=Bank, 1=Credit Card, 2=Electronic", (value) {
-                            if (value == null || value.isEmpty) return "Enter Payment Method";
-                            final paymentMethod = int.tryParse(value);
-                            if (paymentMethod == null || paymentMethod < 0 || paymentMethod > 2) {
-                              return "Enter 0, 1, or 2";
-                            }
-                            return null;
-                          }),
-                          const SizedBox(height: 10), // Consistent spacing
-                          _buildTextField(seniorCitizenController, "Senior Citizen", "0=No, 1=Yes", (value) {
-                            if (value == null || value.isEmpty) return "Enter Senior Citizen";
-                            final seniorCitizen = int.tryParse(value);
-                            if (seniorCitizen == null || seniorCitizen < 0 || seniorCitizen > 1) {
-                              return "Enter 0 or 1";
-                            }
-                            return null;
-                          }),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 10), // Consistent spacing between columns
-                    Expanded(
-                      child: Column(
-                        children: [
-                          _buildTextField(genderController, "Gender", "0=Female, 1=Male", (value) {
-                            if (value == null || value.isEmpty) return "Enter Gender";
-                            final gender = int.tryParse(value);
-                            if (gender == null || gender < 0 || gender > 1) {
-                              return "Enter 0 or 1";
-                            }
-                            return null;
-                          }),
-                          const SizedBox(height: 10), // Consistent spacing
-                          _buildTextField(partnerController, "Partner", "0=No, 1=Yes", (value) {
-                            if (value == null || value.isEmpty) return "Enter Partner";
-                            final partner = int.tryParse(value);
-                            if (partner == null || partner < 0 || partner > 1) {
-                              return "Enter 0 or 1";
-                            }
-                            return null;
-                          }),
-                          const SizedBox(height: 10), // Consistent spacing
-                          _buildTextField(dependentsController, "Dependents", "0=No, 1=Yes", (value) {
-                            if (value == null || value.isEmpty) return "Enter Dependents";
-                            final dependents = int.tryParse(value);
-                            if (dependents == null || dependents < 0 || dependents > 1) {
-                              return "Enter 0 or 1";
-                            }
-                            return null;
-                          }),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 10), // Consistent spacing between columns
-                    Expanded(
-                      child: Column(
-                        children: [
-                          _buildTextField(phoneServiceController, "Phone Service", "0=No, 1=Yes", (value) {
-                            if (value == null || value.isEmpty) return "Enter Phone Service";
-                            final phoneService = int.tryParse(value);
-                            if (phoneService == null || phoneService < 0 || phoneService > 1) {
-                              return "Enter 0 or 1";
-                            }
-                            return null;
-                          }),
-                          const SizedBox(height: 10), // Consistent spacing
-                          _buildTextField(multipleLinesController, "Multiple Lines", "0=No, 1=Yes", (value) {
-                            if (value == null || value.isEmpty) return "Enter Multiple Lines";
-                            final multipleLines = int.tryParse(value);
-                            if (multipleLines == null || multipleLines < 0 || multipleLines > 1) {
-                              return "Enter 0 or 1";
-                            }
-                            return null;
-                          }),
-                          const SizedBox(height: 10), // Consistent spacing
-                          _buildTextField(internetServiceController, "Internet Service", "0=DSL, 1=Fiber optic", (value) {
-                            if (value == null || value.isEmpty) return "Enter Internet Service";
-                            final internetService = int.tryParse(value);
-                            if (internetService == null || internetService < 0 || internetService > 1) {
-                              return "Enter 0 or 1";
-                            }
-                            return null;
-                          }),
-                        ],
-                      ),
-                    ),
-                  ],
+                // Title
+                Text(
+                  "Predict Customer Churn",
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
-                const SizedBox(height: 20), // Consistent spacing between rows
-                // Row 2
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        children: [
-                          _buildTextField(onlineSecurityController, "Online Security", "0=No, 1=Yes", (value) {
-                            if (value == null || value.isEmpty) return "Enter Online Security";
-                            final onlineSecurity = int.tryParse(value);
-                            if (onlineSecurity == null || onlineSecurity < 0 || onlineSecurity > 1) {
-                              return "Enter 0 or 1";
-                            }
-                            return null;
-                          }),
-                          const SizedBox(height: 10), // Consistent spacing
-                          _buildTextField(onlineBackupController, "Online Backup", "0=No, 1=Yes", (value) {
-                            if (value == null || value.isEmpty) return "Enter Online Backup";
-                            final onlineBackup = int.tryParse(value);
-                            if (onlineBackup == null || onlineBackup < 0 || onlineBackup > 1) {
-                              return "Enter 0 or 1";
-                            }
-                            return null;
-                          }),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 10), // Consistent spacing between columns
-                    Expanded(
-                      child: Column(
-                        children: [
-                          _buildTextField(deviceProtectionController, "Device Protection", "0=No, 1=Yes", (value) {
-                            if (value == null || value.isEmpty) return "Enter Device Protection";
-                            final deviceProtection = int.tryParse(value);
-                            if (deviceProtection == null || deviceProtection < 0 || deviceProtection > 1) {
-                              return "Enter 0 or 1";
-                            }
-                            return null;
-                          }),
-                          const SizedBox(height: 10), // Consistent spacing
-                          _buildTextField(techSupportController, "Tech Support", "0=No, 1=Yes", (value) {
-                            if (value == null || value.isEmpty) return "Enter Tech Support";
-                            final techSupport = int.tryParse(value);
-                            if (techSupport == null || techSupport < 0 || techSupport > 1) {
-                              return "Enter 0 or 1";
-                            }
-                            return null;
-                          }),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 10), // Consistent spacing between columns
-                    Expanded(
-                      child: Column(
-                        children: [
-                          _buildTextField(streamingTVController, "Streaming TV", "0=No, 1=Yes", (value) {
-                            if (value == null || value.isEmpty) return "Enter Streaming TV";
-                            final streamingTV = int.tryParse(value);
-                            if (streamingTV == null || streamingTV < 0 || streamingTV > 1) {
-                              return "Enter 0 or 1";
-                            }
-                            return null;
-                          }),
-                          const SizedBox(height: 10), // Consistent spacing
-                          _buildTextField(streamingMoviesController, "Streaming Movies", "0=No, 1=Yes", (value) {
-                            if (value == null || value.isEmpty) return "Enter Streaming Movies";
-                            final streamingMovies = int.tryParse(value);
-                            if (streamingMovies == null || streamingMovies < 0 || streamingMovies > 1) {
-                              return "Enter 0 or 1";
-                            }
-                            return null;
-                          }),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 10), // Consistent spacing between columns
-                    Expanded(
-                      child: Column(
-                        children: [
-                          _buildTextField(paperlessBillingController, "Paperless Billing", "0=No, 1=Yes", (value) {
-                            if (value == null || value.isEmpty) return "Enter Paperless Billing";
-                            final paperlessBilling = int.tryParse(value);
-                            if (paperlessBilling == null || paperlessBilling < 0 || paperlessBilling > 1) {
-                              return "Enter 0 or 1";
-                            }
-                            return null;
-                          }),
-                        ],
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 10),
+
+                // Description
+                Text(
+                  "Fill in the customer details to predict churn risk.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
-                const SizedBox(height: 20), // Consistent spacing before the button
-                ElevatedButton(
-                  onPressed: _predictChurn,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
+                const SizedBox(height: 20),
+
+                // Form Fields
+                _buildTextField(tenureController, "Tenure (months)", "1-72"),
+                _buildTextField(monthlyChargesController, "Monthly Charges", "10-120"),
+                _buildTextField(totalChargesController, "Total Charges", "0-8000"),
+                _buildTextField(contractController, "Contract Type", "0=Month-to-Month, 1=One Year, 2=Two Years"),
+                _buildTextField(paymentMethodController, "Payment Method", "0=Bank, 1=Credit Card, 2=Electronic"),
+                _buildTextField(seniorCitizenController, "Senior Citizen", "0=No, 1=Yes"),
+                _buildTextField(genderController, "Gender", "0=Female, 1=Male"),
+                _buildTextField(partnerController, "Partner", "0=No, 1=Yes"),
+                _buildTextField(dependentsController, "Dependents", "0=No, 1=Yes"),
+                _buildTextField(phoneServiceController, "Phone Service", "0=No, 1=Yes"),
+                _buildTextField(multipleLinesController, "Multiple Lines", "0=No, 1=Yes"),
+                _buildTextField(internetServiceController, "Internet Service", "0=DSL, 1=Fiber optic"),
+                _buildTextField(onlineSecurityController, "Online Security", "0=No, 1=Yes"),
+                _buildTextField(onlineBackupController, "Online Backup", "0=No, 1=Yes"),
+                _buildTextField(deviceProtectionController, "Device Protection", "0=No, 1=Yes"),
+                _buildTextField(techSupportController, "Tech Support", "0=No, 1=Yes"),
+                _buildTextField(streamingTVController, "Streaming TV", "0=No, 1=Yes"),
+                _buildTextField(streamingMoviesController, "Streaming Movies", "0=No, 1=Yes"),
+                _buildTextField(paperlessBillingController, "Paperless Billing", "0=No, 1=Yes"),
+                
+                const SizedBox(height: 20),
+
+                // Predict Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _predictChurn,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 14),
+                      textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    child: const Text("Predict Churn"),
                   ),
-                  child: const Text("Predict Churn"),
                 ),
-                const SizedBox(height: 20), // Consistent spacing after the button
+
+                const SizedBox(height: 20),
+
+                // Prediction Result
                 Text(
                   result,
                   style: const TextStyle(fontSize: 20, color: Colors.white),
                 ),
-                if (confidence > 0) // Conditionally display confidence
-                  Column(
-                    children: [
-                      const SizedBox(height: 10), // Spacing between result and confidence
-                      Text(
-                        "Confidence: ${(confidence * 100).toStringAsFixed(2)}%", // Display confidence rate
-                        style: const TextStyle(fontSize: 16, color: Colors.white),
-                      ),
-                    ],
+
+                if (confidence > 0)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Text(
+                      "Confidence: ${(confidence * 100).toStringAsFixed(2)}%",
+                      style: const TextStyle(fontSize: 16, color: Colors.white),
+                    ),
                   ),
               ],
             ),
@@ -357,27 +173,23 @@ class _ChurnPredictionPageState extends State<ChurnPredictionPage> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, String hint, FormFieldValidator<String> validator) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        labelStyle: const TextStyle(color: Colors.white),
-        hintStyle: const TextStyle(color: Colors.grey),
-        border: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.5)),
+  Widget _buildTextField(TextEditingController controller, String label, String hint) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: hint,
+          filled: true,
+          fillColor: Colors.grey[900],
+          labelStyle: TextStyle(color: Colors.white),
+          hintStyle: TextStyle(color: Colors.grey),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.5)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.5)),
-        ),
+        style: TextStyle(color: Colors.white),
+        keyboardType: TextInputType.number,
       ),
-      style: const TextStyle(color: Colors.white),
-      keyboardType: TextInputType.number,
-      validator: validator,
     );
   }
 }
