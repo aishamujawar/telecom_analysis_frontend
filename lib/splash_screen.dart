@@ -1,85 +1,116 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
-import 'home_page.dart'; // The page that loads after splash
+import 'home_page.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
-  int _currentBrandIndex = 0;
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<Offset> _slideAnimation;
+  
   final List<String> brandLogos = [
-    "assets/airtel.png", // Ensure these images are in assets
-    "assets/vodafone.png",
-    "assets/jio.png"
+    "assets/airtel.png",
+    "assets/vodaphone.png",
+    "assets/jio.png",
   ];
 
   @override
   void initState() {
     super.initState();
+    
+    print("Splash Screen Loaded"); // Debugging check
 
-    // Start slideshow of brand logos
-    Timer.periodic(Duration(seconds: 2), (timer) {
-      if (!mounted) return;
-      setState(() {
-        _currentBrandIndex = (_currentBrandIndex + 1) % brandLogos.length;
-      });
-    });
+    // Animation controller for continuous sliding effect
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 1), // Faster transition
+    )..repeat(reverse: false);
 
-    // Navigate to HomePage after 8 seconds
-    Timer(Duration(seconds: 8), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(1, 0),
+      end: Offset(-1, 0),
+    ).animate(_animationController);
+
+    // Ensure splash screen stays for 8 seconds before moving to HomePage
+    Future.delayed(Duration(seconds: 8), () {
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black, // Dark theme
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Animated Logo
-          AnimatedOpacity(
-            opacity: 1.0,
-            duration: Duration(seconds: 2),
-            child: Icon(Icons.trending_up, size: 100, color: Colors.blue), // Temporary logo
-          ),
-          SizedBox(height: 20),
-
-          // Title
-          Text(
-            "Telecom Churn Analysis",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-          SizedBox(height: 30),
-
-          // Loading Indicator
-          CircularProgressIndicator(color: Colors.blue),
-          SizedBox(height: 40),
-
-          // "Brands That Trust Us" Text
-          Text(
-            "Brands That Trust Us",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-          SizedBox(height: 20),
-
-          // Slideshow of Brand Logos
-          AnimatedSwitcher(
-            duration: Duration(seconds: 1),
-            child: Image.asset(
-              brandLogos[_currentBrandIndex],
-              key: ValueKey<int>(_currentBrandIndex),
-              width: 150,
-              height: 80,
+      body: Center( // Centers everything
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Animated Logo
+            AnimatedOpacity(
+              opacity: 1.0,
+              duration: Duration(seconds: 2),
+              child: Icon(Icons.trending_up, size: 100, color: Colors.blue),
             ),
-          ),
-        ],
+            SizedBox(height: 20),
+
+            // Title
+            Text(
+              "Telecom Churn Analysis",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+            SizedBox(height: 30),
+
+            // Loading Indicator
+            CircularProgressIndicator(color: Colors.blue),
+            SizedBox(height: 40),
+
+            // "Brands That Trust Us" Text
+            Text(
+              "Brands That Trust Us",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+            SizedBox(height: 20),
+
+            // Continuous Sliding Brand Logos
+            SizedBox(
+              height: 80,
+              width: MediaQuery.of(context).size.width * 0.8, // Adjust width dynamically
+              child: Stack(
+                children: List.generate(brandLogos.length, (index) {
+                  return AnimatedBuilder(
+                    animation: _animationController,
+                    builder: (context, child) {
+                      return FractionalTranslation(
+                        translation: Offset(
+                          _slideAnimation.value.dx + index.toDouble(),
+                          0.0,
+                        ),
+                        child: Image.asset(
+                          brandLogos[index],
+                          width: 150,
+                          height: 80,
+                        ),
+                      );
+                    },
+                  );
+                }),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

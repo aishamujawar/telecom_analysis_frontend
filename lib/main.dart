@@ -1,39 +1,113 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
-
+import 'splash_screen.dart';
 import 'home_page.dart';
-import 'feedback_page.dart';
 import 'services_page.dart';
-import 'churn_prediction_page.dart';
-import 'basic_churn_page.dart';
-import 'dataset_page.dart';
-import 'churn_analysis_page.dart';
+import 'feedback_page.dart';
 
 void main() {
-  if (kIsWeb) {
-    databaseFactory = databaseFactoryFfiWeb;
-  } else {
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
-  }
-
-  runApp(TelecomServicesApp());
+  WidgetsFlutterBinding.ensureInitialized(); // Ensures proper Flutter setup
+  runApp(TelecomChurnApp());
 }
 
-class TelecomServicesApp extends StatelessWidget {
+class TelecomChurnApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Telecom Services',
-      theme: ThemeData.dark().copyWith(
-        primaryColor: Colors.black,
-        scaffoldBackgroundColor: Colors.black,
-        colorScheme: ColorScheme.dark().copyWith(primary: Colors.blue),
+      theme: ThemeData.dark(), // Dark theme
+      home: SplashScreen(), // Start with Splash Screen
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Telecom Services")),
+      drawer: AppDrawer(), // Drawer for navigation
+      body: Stack(
+        children: [
+          // Background Image
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.3,
+              child: Image.asset(
+                "assets/bggif.gif", // Ensure this file is in assets
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Company Information
+                Card(
+                  color: Colors.blueGrey[900],
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          "Welcome to Telecom Services",
+                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          "Providing cutting-edge telecom data analysis and customer insights.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16, color: Colors.white70),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 40),
+                // Options
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildOptionCard(context, "Our Services", Icons.business, () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => TelecomServicesPage()));
+                    }),
+                    SizedBox(width: 20),
+                    _buildOptionCard(context, "Customer Feedback", Icons.feedback, () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerFeedbackPage()));
+                    }),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
-      home: HomePage(),
+    );
+  }
+
+  Widget _buildOptionCard(BuildContext context, String title, IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        color: Colors.blueGrey[900],
+        elevation: 6,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 50, color: Colors.white),
+              SizedBox(height: 10),
+              Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -50,13 +124,8 @@ class AppDrawer extends StatelessWidget {
             child: Text("Navigation", style: TextStyle(color: Colors.white, fontSize: 24)),
           ),
           _buildDrawerItem(context, "Home", Icons.home, HomePage()),
-          _buildDrawerItem(context, "Our Services", Icons.business,TelecomServicesPage()),
+          _buildDrawerItem(context, "Services", Icons.business, TelecomServicesPage()),
           _buildDrawerItem(context, "Feedback", Icons.feedback, CustomerFeedbackPage()),
-          _buildDrawerItem(context, "Predict Churn", Icons.trending_up, ChurnPredictionPage()),
-          _buildDrawerItem(context, "Basic Churn", Icons.analytics, BasicChurnPage()),
-          _buildDrawerItem(context, "Dataset", Icons.dataset, DatasetPage()),
-          _buildDrawerItem(context, "Churn Analysis", Icons.bar_chart, ChurnAnalysisPage()),
-         
         ],
       ),
     );
