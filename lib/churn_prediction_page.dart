@@ -37,7 +37,7 @@ class _ChurnPredictionPageState extends State<ChurnPredictionPage> {
   Future<void> _predictChurn() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final url = Uri.parse('http://192.168.1.5:5001/predict'); // Your local IP
+    final url = Uri.parse('http://127.0.0.1:5001/predict'); // Your local IP
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},

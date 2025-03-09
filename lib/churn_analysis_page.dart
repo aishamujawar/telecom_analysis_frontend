@@ -10,27 +10,27 @@ class ChurnAnalysisPage extends StatefulWidget {
 }
 
 class _ChurnAnalysisPageState extends State<ChurnAnalysisPage> {
-  String churnCountsImageUrl = "http://192.168.1.5:5001/get_churn_counts_image";
-  String missingValuesImageUrl = "http://192.168.1.5:5001/get_missing_values_plot";
+  String churnCountsImageUrl = "http://127.0.0.1:5001/get_churn_counts_image";
+  String missingValuesImageUrl = "http://127.0.0.1:5001/get_missing_values_plot";
   List<String> countplotImageUrls = [];
-  String monthlyVsTotalChargesImageUrl = "http://192.168.1.5:5001/get_monthly_vs_total_charges";
-  String monthlyChargesKdeUrl = "http://192.168.1.5:5001/get_monthly_charges_kde";
-  String totalChargesKdeUrl = "http://192.168.1.5:5001/get_total_charges_kde";
-  String churnCorrelationBarUrl = "http://192.168.1.5:5001/get_churn_correlation_bar";
-  String correlationHeatmapUrl = "http://192.168.1.5:5001/get_correlation_heatmap";
-  String genderForChurnedUrl = "http://192.168.1.5:5001/get_distribution_of_gender_for_churned_customers";
-  String genderForNonChurnedUrl = "http://192.168.1.5:5001/get_distribution_of_gender_for_non_churned_customers";
-  String paymentMethodForChurnedUrl = "http://192.168.1.5:5001/get_distribution_of_paymentmethod_for_churned_customers";
-  String contractForChurnedUrl = "http://192.168.1.5:5001/get_distribution_of_contract_for_churned_customers";
-  String techSupportForChurnedUrl = "http://192.168.1.5:5001/get_distribution_of_techsupport_for_churned_customers";
-  String seniorCitizenForChurnedUrl = "http://192.168.1.5:5001/get_distribution_of_seniorcitizen_for_churned_customers";
-  String distributionTenureByChurnUrl = "http://192.168.1.5:5001/get_distribution_tenure_by_churn";
-  String distributionMonthlyChargesByChurnUrl = "http://192.168.1.5:5001/get_distribution_monthlycharges_by_churn";
-  String distributionTotalChargesByChurnUrl = "http://192.168.1.5:5001/get_distribution_totalcharges_by_churn";
-  String customerSegmentationImageUrl = "http://192.168.1.5:5001/get_customer_segmentation_by_contract_tenure";
-  String featureImportanceImageUrl = "http://192.168.1.5:5001/get_feature_importance_random_forest";
-  String customerClustersImageUrl = "http://192.168.1.5:5001/get_customer_clusters_plot";
-  String survivalAnalysisImageUrl = "http://192.168.1.5:5001/get_survival_analysis_plot";
+  String monthlyVsTotalChargesImageUrl = "http://127.0.0.1:5001/get_monthly_vs_total_charges";
+  String monthlyChargesKdeUrl = "http://127.0.0.1:5001/get_monthly_charges_kde";
+  String totalChargesKdeUrl = "http://127.0.0.1:5001/get_total_charges_kde";
+  String churnCorrelationBarUrl = "http://127.0.0.1:5001/get_churn_correlation_bar";
+  String correlationHeatmapUrl = "http://127.0.0.1:5001/get_correlation_heatmap";
+  String genderForChurnedUrl = "http://127.0.0.1:5001/get_distribution_of_gender_for_churned_customers";
+  String genderForNonChurnedUrl = "http://127.0.0.1:5001/get_distribution_of_gender_for_non_churned_customers";
+  String paymentMethodForChurnedUrl = "http://127.0.0.1:5001/get_distribution_of_paymentmethod_for_churned_customers";
+  String contractForChurnedUrl = "http://127.0.0.1:5001/get_distribution_of_contract_for_churned_customers";
+  String techSupportForChurnedUrl = "http://127.0.0.1:5001/get_distribution_of_techsupport_for_churned_customers";
+  String seniorCitizenForChurnedUrl = "http://127.0.0.1:5001/get_distribution_of_seniorcitizen_for_churned_customers";
+  String distributionTenureByChurnUrl = "http://127.0.0.1:5001/get_distribution_tenure_by_churn";
+  String distributionMonthlyChargesByChurnUrl = "http://127.0.0.1:5001/get_distribution_monthlycharges_by_churn";
+  String distributionTotalChargesByChurnUrl = "http://127.0.0.1:5001/get_distribution_totalcharges_by_churn";
+  String customerSegmentationImageUrl = "http://127.0.0.1:5001/get_customer_segmentation_by_contract_tenure";
+  String featureImportanceImageUrl = "http://127.0.0.1:5001/get_feature_importance_random_forest";
+  String customerClustersImageUrl = "http://127.0.0.1:5001/get_customer_clusters_plot";
+  String survivalAnalysisImageUrl = "http://127.0.0.1:5001/get_survival_analysis_plot";
 
   // Use CarouselSliderController instead of CarouselController
   final CarouselSliderController _countPlotController = CarouselSliderController();
@@ -47,11 +47,11 @@ class _ChurnAnalysisPageState extends State<ChurnAnalysisPage> {
     final predictors = ['gender', 'SeniorCitizen', 'Partner', 'Dependents', 'PhoneService', 'MultipleLines', 'InternetService', 'OnlineSecurity', 'OnlineBackup', 'DeviceProtection', 'TechSupport', 'StreamingTV', 'StreamingMovies', 'Contract', 'PaperlessBilling', 'PaymentMethod', 'tenure_group'];
 
     for (var predictor in predictors) {
-      final response = await http.get(Uri.parse("http://192.168.1.5:5001/get_countplot/$predictor"));
+      final response = await http.get(Uri.parse("http://127.0.0.1:5001/get_countplot/$predictor"));
       if (!mounted) return;
       if (response.statusCode == 200) {
         setState(() {
-          countplotImageUrls.add("http://192.168.1.5:5001/get_countplot/$predictor");
+          countplotImageUrls.add("http://127.0.0.1:5001/get_countplot/$predictor");
         });
       }
     }

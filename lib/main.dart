@@ -1,86 +1,74 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart'; // Import for FFI database support
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+
 import 'home_page.dart';
+import 'feedback_page.dart';
+import 'services_page.dart';
+import 'churn_prediction_page.dart';
+import 'basic_churn_page.dart';
 import 'dataset_page.dart';
 import 'churn_analysis_page.dart';
-import 'churn_prediction_page.dart';
 
 void main() {
   if (kIsWeb) {
-    databaseFactory = databaseFactoryFfiWeb; // Use Web database (IndexedDB)
+    databaseFactory = databaseFactoryFfiWeb;
   } else {
     sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi; // Use normal SQLite on mobile/desktop
+    databaseFactory = databaseFactoryFfi;
   }
 
-  runApp(TelecomChurnApp());
+  runApp(TelecomServicesApp());
 }
 
-class TelecomChurnApp extends StatelessWidget {
+class TelecomServicesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Telecom Churn Analysis',
-      home: BottomNavBar(), // Use BottomNavBar as the home page
+      debugShowCheckedModeBanner: false,
+      title: 'Telecom Services',
+      theme: ThemeData.dark().copyWith(
+        primaryColor: Colors.black,
+        scaffoldBackgroundColor: Colors.black,
+        colorScheme: ColorScheme.dark().copyWith(primary: Colors.blue),
+      ),
+      home: HomePage(),
     );
   }
 }
 
-class BottomNavBar extends StatefulWidget {
-  @override
-  _BottomNavBarState createState() => _BottomNavBarState();
-}
-
-class _BottomNavBarState extends State<BottomNavBar> {
-  int _selectedIndex = 0; // Track the selected index
-
-  // List of pages to navigate to
-  final List<Widget> _pages = [
-    HomePage(),
-    DatasetPage(),
-    ChurnAnalysisPage(),
-    ChurnPredictionPage(), // Prediction page
-  ];
-
-  // Handle bottom navigation bar item taps
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
+class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_selectedIndex], // Display the selected page
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex, // Current selected index
-        onTap: _onItemTapped, // Handle item taps
-        selectedItemColor: Colors.blue, // Color of the selected item
-        unselectedItemColor: Colors.grey, // Color of unselected items
-        showUnselectedLabels: true, // Show labels for unselected items
-        type: BottomNavigationBarType.fixed, // Fixed type for more than 3 items
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(color: Colors.blue),
+            child: Text("Navigation", style: TextStyle(color: Colors.white, fontSize: 24)),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.data_usage),
-            label: 'Dataset',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.analytics),
-            label: 'Analysis',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.trending_up), // Icon for prediction
-            label: 'Prediction', // Label for prediction
-          ),
+          _buildDrawerItem(context, "Home", Icons.home, HomePage()),
+          _buildDrawerItem(context, "Our Services", Icons.business,TelecomServicesPage()),
+          _buildDrawerItem(context, "Feedback", Icons.feedback, CustomerFeedbackPage()),
+          _buildDrawerItem(context, "Predict Churn", Icons.trending_up, ChurnPredictionPage()),
+          _buildDrawerItem(context, "Basic Churn", Icons.analytics, BasicChurnPage()),
+          _buildDrawerItem(context, "Dataset", Icons.dataset, DatasetPage()),
+          _buildDrawerItem(context, "Churn Analysis", Icons.bar_chart, ChurnAnalysisPage()),
+         
         ],
       ),
+    );
+  }
+
+  Widget _buildDrawerItem(BuildContext context, String title, IconData icon, Widget page) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.white),
+      title: Text(title, style: TextStyle(color: Colors.white)),
+      onTap: () {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => page));
+      },
     );
   }
 }
