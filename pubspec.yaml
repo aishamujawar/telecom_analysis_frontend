@@ -45,3 +45,7 @@ flutter:
     - assets/Telecom-Customer-Churn.csv
     - assets/telecom_churn.db
     - assets/bggif.gif
+    - assets/airtel.png
+    - assets/vodaphone.png
+    - assets/jio.png
+
